@@ -46,10 +46,10 @@ async function run() {
 });
 
 app.patch("/feltest/:id", async(req,res) => {
-  const {productId} = req.params;
+  const {id} = req.params;
   const updateData = req.body;
   
-  const filter = { _id:new ObjectId(productId)};
+  const filter = { _id:new ObjectId(id)};
   const updateDoc = {
     $set:{
       ...updateData,
@@ -59,6 +59,26 @@ app.patch("/feltest/:id", async(req,res) => {
   res.send(result);
 })
 
+app.post("/feltest", async (req, res) => {
+  const bookingData = req.body;
+  const result = await bookingsCollection.insertOne(bookingData);
+  res.send(result);
+});
+
+
+app.get("/feltest", async (req, res) => {
+  try {
+    const email = req.query.email;
+    if (!email) {
+      return res.status(400).send({ message: "Email query parameter is required" });
+    }
+    const query = { userEmail: email };
+    const result = await bookingsCollection.find(query).toArray();
+    res.send(result);
+  } catch (error) {
+    res.status(500).send({ message: "Server Error" });
+  }
+});
 
 
 
